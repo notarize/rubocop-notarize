@@ -1,1 +1,6 @@
 # Write it!
+
+Performance/DisableReload:
+  Description: 'TODO: Write a description of the cop.'
+  Enabled: pending
+  VersionAdded: '0.93'
