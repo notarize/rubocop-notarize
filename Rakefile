@@ -23,7 +23,10 @@ task :new_cop, [:cop] do |_task, args|
   github_user = `git config github.user`.chop
   github_user = 'your_id' if github_user.empty?
 
-  generator = RuboCop::Cop::Generator.new(cop_name, github_user)
+  classes = ::RuboCop::Cop.constants.select {|c| ::RuboCop::Cop.const_get(c).is_a? Class}
+  puts classes
+
+  generator = ::RuboCop::Cop::Generator.new(cop_name, github_user)
 
   generator.write_source
   generator.write_spec
