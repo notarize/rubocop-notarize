@@ -1,3 +1,6 @@
 Naming/FileName:
  Exclude:
    - lib/rubocop-notarize.rb
+
+Performance/DisableReload:
+  Enabled: true
