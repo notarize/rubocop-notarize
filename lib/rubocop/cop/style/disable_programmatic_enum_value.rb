@@ -1,16 +1,12 @@
 # frozen_string_literal: true
-require 'pry'
 
-# TODO: when finished, run `rake generate_cops_documentation` to update the docs
 module RuboCop
   module Cop
     module Style
-      # TODO: Write cop description and example of bad / good code. For every
-      # `SupportedStyle` and unique configuration, there needs to be examples.
-      # Examples must have valid Ruby syntax. Do not use upticks.
+      # Do not assign GraphQL Enums programmatically.
+      # Doing so obfuscates changes to clients that break when new Enums are added.
       #
-      # @example EnforcedStyle: bar (default)
-      #   # Description of the `bar` style.
+      # @example DisableProgrammaticEnumValue:
       #
       #   # bad
       #   RubyEnum.each_value { |type| enum_value type }
