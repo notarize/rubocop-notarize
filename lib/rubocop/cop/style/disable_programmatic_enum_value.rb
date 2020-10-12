@@ -1,4 +1,5 @@
 # frozen_string_literal: true
+require 'pry'
 
 # TODO: when finished, run `rake generate_cops_documentation` to update the docs
 module RuboCop
@@ -12,54 +13,24 @@ module RuboCop
       #   # Description of the `bar` style.
       #
       #   # bad
-      #   bad_bar_method
-      #
-      #   # bad
-      #   bad_bar_method(args)
+      #   RubyEnum.each_value { |type| enum_value type }
       #
       #   # good
-      #   good_bar_method
-      #
-      #   # good
-      #   good_bar_method(args)
-      #
-      # @example EnforcedStyle: foo
-      #   # Description of the `foo` style.
-      #
-      #   # bad
-      #   bad_foo_method
-      #
-      #   # bad
-      #   bad_foo_method(args)
-      #
-      #   # good
-      #   good_foo_method
-      #
-      #   # good
-      #   good_foo_method(args)
-      #
+      #   enum_value RubyEnum::TYPE
       class DisableProgrammaticEnumValue < Base
-        # TODO: Implement the cop in here.
-        #
-        # In many cases, you can use a node matcher for matching node pattern.
-        # See https://github.com/rubocop-hq/rubocop-ast/blob/master/lib/rubocop/ast/node_pattern.rb
-        #
-        # For example
         MSG = 'Do not assign graphql enums programmatically.'
 
-        def_node_matcher :bad_method?, <<~PATTERN
-          (send nil? :bad_method ...)
+        def_node_matcher :each_value?, <<~PATTERN
+            (send (...) :each_value)
         PATTERN
 
-        def on_send(node)
-          puts '--------------'
-          puts node
-          puts 'source'
-          puts node.child_nodes
-          return unless bad_method?(node)
+        def on_block(node)
+          return unless each_value?(node.send_node)
+          return unless [:enum_value, :value].include?(node.body.method_name)
 
           add_offense(node)
         end
+
       end
     end
   end
