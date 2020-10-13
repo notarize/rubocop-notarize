@@ -1,6 +1,9 @@
-# Write it!
-
 Performance/DisableReload:
-  Description: 'TODO: Write a description of the cop.'
+  Description: 'Disallow users to call .reload on an ActiveRecord object'
+  Enabled: pending
+  VersionAdded: '0.93'
+
+Style/DisableProgrammaticEnumValue:
+  Description: 'Disallow users to create enums with an each_value statement'
   Enabled: pending
   VersionAdded: '0.93'
