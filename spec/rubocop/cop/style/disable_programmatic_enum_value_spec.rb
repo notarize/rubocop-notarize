@@ -55,4 +55,14 @@ RSpec.describe RuboCop::Cop::Style::DisableProgrammaticEnumValue do
       end
     RUBY
   end
+
+  it 'doesnt fail on setters' do
+    expect_no_offenses(<<~RUBY)
+      first_array.each_value do |type|
+        var = object.getter
+        next unless var.method?
+        Object.caller(var)
+      end
+    RUBY
+  end
 end
