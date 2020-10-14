@@ -22,11 +22,20 @@ module RuboCop
 
         def on_block(node)
           return unless each_value?(node.send_node)
-          return unless [:enum_value, :value].include?(node.body.method_name)
+          return unless invalid_children?(node.body)
 
           add_offense(node)
         end
 
+        private
+
+        def invalid_children?(node)
+          if node.send_type?
+            [:enum_value, :value].include?(node.method_name)
+          else
+            node.children.any? { |child| invalid_children?(child) }
+          end
+        end
       end
     end
   end

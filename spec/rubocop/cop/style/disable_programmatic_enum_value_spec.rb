@@ -14,7 +14,7 @@ RSpec.describe RuboCop::Cop::Style::DisableProgrammaticEnumValue do
     RUBY
   end
 
-  it 'registers an offense when using enumerating to set enum_value' do
+  it 'registers an offense when using enumerating to set value' do
     expect_offense(<<~RUBY)
       def method
         ruby_enum.each_value { |type| value type }
@@ -30,9 +30,29 @@ RSpec.describe RuboCop::Cop::Style::DisableProgrammaticEnumValue do
     RUBY
   end
 
-  it 'does not register an offense when enumerating lists' do
+  it 'does not register an offense when not settting value' do
     expect_no_offenses(<<~RUBY)
       ruby_enum.each_value { |type| puts type }
+    RUBY
+  end
+
+  it 'does not register an offense when many children not setting value' do
+    expect_no_offenses(<<~RUBY)
+      first_iterator.each_value do |type|
+        obj.create(attr: value)
+        obj.create(attr: value)
+      end
+    RUBY
+  end
+
+  it 'does not register an offense when child is iterator' do
+    expect_no_offenses(<<~RUBY)
+      first_iterator.each_value do |type|
+        second_iterator.each_value do
+          obj.create(attr: value)
+          obj.create(attr: value)
+        end
+      end
     RUBY
   end
 end
