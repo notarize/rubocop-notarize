@@ -30,7 +30,9 @@ module RuboCop
         private
 
         def invalid_children?(node)
-          return false if node.is_a?(Symbol) || node.nil?
+          if !node.is_a?(::AST::Node)
+            return false
+          end
 
           if node.send_type?
             [:enum_value, :value].include?(node.method_name)
