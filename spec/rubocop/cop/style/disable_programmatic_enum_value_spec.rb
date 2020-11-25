@@ -5,6 +5,13 @@ RSpec.describe RuboCop::Cop::Style::DisableProgrammaticEnumValue do
 
   let(:config) { RuboCop::Config.new }
 
+  it 'registers an offense when using each' do
+    expect_offense(<<~RUBY)
+      ruby_enum.each do |provider| enum_value provider end
+      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ Do not assign graphql enums programmatically.
+    RUBY
+  end
+
   it 'registers an offense when using enumerating to set enum_value' do
     expect_offense(<<~RUBY)
       def method

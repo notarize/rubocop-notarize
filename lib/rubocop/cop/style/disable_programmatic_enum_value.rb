@@ -20,8 +20,12 @@ module RuboCop
             (send (...) :each_value)
         PATTERN
 
+        def_node_matcher :each?, <<~PATTERN
+            (send (...) :each)
+        PATTERN
+
         def on_block(node)
-          return unless each_value?(node.send_node)
+          return unless each_value?(node.send_node) || each?(node.send_node)
           return unless invalid_children?(node.body)
 
           add_offense(node)
