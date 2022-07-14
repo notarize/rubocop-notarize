@@ -3,7 +3,7 @@ require_relative 'lib/rubocop/notarize/version'
 Gem::Specification.new do |spec|
   spec.name          = "rubocop-notarize"
   spec.version       = RuboCop::Notarize::VERSION
-  spec.authors       = ['Arturo Gonzalez', 'Matt Murphey', 'Jeremie Charrier']
+  spec.authors       = ['Arturo Gonzalez', 'Matthew Murphy', 'Jérémie Charrier']
 
   spec.summary       = 'Create Linting rules for Notarize platform'
   spec.description   = 'Custom linting rules for notarize Rupy platform'
