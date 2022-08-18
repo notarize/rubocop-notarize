@@ -63,7 +63,6 @@ module RuboCop
             # use it to start a new node  tree with just the section of the spec I care about
             found_test = false
 
-            binding.pry if @spec_nodes.blank?
             @spec_nodes.each_descendant do |spec_node|
               # This executes till we find the test for our specific method_name
               next unless spec_node.class == RuboCop::AST::SendNode
