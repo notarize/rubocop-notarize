@@ -1,4 +1,5 @@
 require "rubocop/notarize/version"
+require "yaml"
 
 module RuboCop
   module Notarize
