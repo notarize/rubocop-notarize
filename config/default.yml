@@ -17,3 +17,8 @@ Swagger/SpecValidation:
   Description: 'Validates swagger spec for external endpoints'
   Enabled: false
   VersionAdded: '1.31.2' # Bump when actually released
+
+Layout/LineLength:
+  Description: 'Enforce maximum line length'
+  Enabled: true
+  Max: 1180
