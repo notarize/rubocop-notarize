@@ -12,3 +12,8 @@ Style/DisableProgrammaticEnumValue:
   Description: 'Disallow users to create enums with an each_value statement'
   Enabled: pending
   VersionAdded: '0.93'
+
+Style/GraphCamelize:
+  Description: 'TODO: Write a description of the cop.'
+  Enabled: pending
+  VersionAdded: '<<next>>'
