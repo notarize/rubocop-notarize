@@ -1,10 +1,6 @@
 # frozen_string_literal: true
 
-RSpec.describe RuboCop::Cop::Performance::RequireFileOpenBlock do
-  subject(:cop) { described_class.new(config) }
-
-  let(:config) { RuboCop::Config.new }
-
+RSpec.describe RuboCop::Cop::Performance::RequireFileOpenBlock, :config do
   it 'registers an offense when using .open with a String parameter' do
     expect_offense(<<~RUBY)
       File.open("file_path")
@@ -102,4 +98,3 @@ RSpec.describe RuboCop::Cop::Performance::RequireFileOpenBlock do
     RUBY
   end
 end
-

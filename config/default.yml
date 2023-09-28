@@ -12,8 +12,3 @@ Style/DisableProgrammaticEnumValue:
   Description: 'Disallow users to create enums with an each_value statement'
   Enabled: pending
   VersionAdded: '0.93'
-
-Swagger/SpecValidation:
-  Description: 'Validates swagger spec for external endpoints'
-  Enabled: false
-  VersionAdded: '1.31.2' # Bump when actually released

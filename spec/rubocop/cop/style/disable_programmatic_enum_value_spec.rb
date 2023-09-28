@@ -1,10 +1,6 @@
 # frozen_string_literal: true
 
-RSpec.describe RuboCop::Cop::Style::DisableProgrammaticEnumValue do
-  subject(:cop) { described_class.new(config) }
-
-  let(:config) { RuboCop::Config.new }
-
+RSpec.describe RuboCop::Cop::Style::DisableProgrammaticEnumValue, :config do
   it 'registers an offense when using each' do
     expect_offense(<<~RUBY)
       ruby_enum.each do |provider| enum_value provider end

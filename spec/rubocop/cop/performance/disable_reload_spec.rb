@@ -1,10 +1,6 @@
 # frozen_string_literal: true
 
-RSpec.describe RuboCop::Cop::Performance::DisableReload do
-  subject(:cop) { described_class.new(config) }
-
-  let(:config) { RuboCop::Config.new }
-
+RSpec.describe RuboCop::Cop::Performance::DisableReload, :config do
   it 'registers an offense when using `#bad_method`' do
     expect_offense(<<~RUBY)
       object.reload

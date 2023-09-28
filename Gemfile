@@ -1,8 +1,12 @@
-source "https://rubygems.org"
-ruby '2.7.1'
+# frozen_string_literal: true
+
+source 'https://rubygems.org'
+ruby '3.2.2'
 
 # Specify your gem's dependencies in rubocop-notarize.gemspec
 gemspec
 
-gem "rake", "~> 12.0"
-gem "rspec", "~> 3.0"
+gem 'rake'
+gem 'rspec'
+gem 'rubocop-rake'
+gem 'rubocop-rspec'
