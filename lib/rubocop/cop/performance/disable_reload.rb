@@ -18,7 +18,7 @@ module RuboCop
       #   shelf.books << book
       #
       class DisableReload < Base
-        MSG = 'Update the model in memory instead of calling .reload'.freeze
+        MSG = 'Update the model in memory instead of calling .reload'
 
         def_node_matcher :reload_call?, <<~PATTERN
           (send (...) :reload)

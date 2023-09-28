@@ -17,11 +17,11 @@ module RuboCop
         MSG = 'Do not assign graphql enums programmatically.'
 
         def_node_matcher :each_value?, <<~PATTERN
-            (send (...) :each_value)
+          (send (...) :each_value)
         PATTERN
 
         def_node_matcher :each?, <<~PATTERN
-            (send (...) :each)
+          (send (...) :each)
         PATTERN
 
         def on_block(node)
@@ -34,12 +34,10 @@ module RuboCop
         private
 
         def invalid_children?(node)
-          if !node.is_a?(::AST::Node)
-            return false
-          end
+          return false unless node.is_a?(::AST::Node)
 
           if node.send_type?
-            [:enum_value, :value].include?(node.method_name)
+            %i[enum_value value].include?(node.method_name)
           else
             node.children.any? { |child| invalid_children?(child) }
           end

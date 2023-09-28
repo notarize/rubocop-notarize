@@ -1,5 +1,7 @@
-require "rubocop/notarize/version"
-require "yaml"
+# frozen_string_literal: true
+
+require 'rubocop/notarize/version'
+require 'yaml'
 
 module RuboCop
   module Notarize
@@ -12,4 +14,3 @@ module RuboCop
     private_constant(:CONFIG_DEFAULT, :PROJECT_ROOT)
   end
 end
-

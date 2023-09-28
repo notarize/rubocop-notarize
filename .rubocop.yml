@@ -1,6 +1,16 @@
-Naming/FileName:
- Exclude:
-   - lib/rubocop-notarize.rb
+require:
+  - rubocop-rake
+  - rubocop-rspec
 
-Performance/DisableReload:
-  Enabled: true
+AllCops:
+  NewCops: enable
+
+Naming/FileName:
+  Exclude:
+    - 'lib/rubocop-notarize.rb'
+
+RSpec/ExampleLength:
+  Enabled: false
+
+Style/Documentation:
+  Enabled: false

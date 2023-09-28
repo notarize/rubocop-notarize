@@ -16,7 +16,7 @@ module RuboCop
       #   body = File.open(file_path) { |file| file.read }
       #
       class RequireFileOpenBlock < Base
-        MSG = 'Use File.open with a block to ensure the file is closed after use.'.freeze
+        MSG = 'Use File.open with a block to ensure the file is closed after use.'
 
         def_node_matcher :open_call?, <<~PATTERN
           (send (...) :open ...)
