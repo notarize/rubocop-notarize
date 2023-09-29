@@ -1,14 +1,19 @@
 Performance/DisableReload:
   Description: 'Disallow users to call .reload on an ActiveRecord object'
-  Enabled: pending
-  VersionAdded: '0.93'
+  Enabled: true
+  VersionAdded: '0.1.5'
 
 Performance/RequireFileOpenBlock:
   Description: 'Enforce opening files with a block to ensure the file gets closed.'
-  Enabled: pending
-  VersionAdded: '1.31.2'
+  Enabled: true
+  VersionAdded: '0.1.5'
 
 Style/DisableProgrammaticEnumValue:
   Description: 'Disallow users to create enums with an each_value statement'
-  Enabled: pending
-  VersionAdded: '0.93'
+  Enabled: true
+  VersionAdded: '0.1.5'
+
+Style/GraphCamelize:
+  Description: 'Do not use the GraphQL camelize option as we always want the default value (true).'
+  Enabled: true
+  VersionAdded: '0.1.5'
