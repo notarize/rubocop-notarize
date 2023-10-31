@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    rubocop-notarize (0.1.5)
+    rubocop-notarize (0.1.6)
       rubocop (>= 0.92)
 
 GEM

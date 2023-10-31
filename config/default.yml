@@ -8,6 +8,11 @@ Performance/RequireFileOpenBlock:
   Enabled: true
   VersionAdded: '0.1.5'
 
+Sidekiq/RequireSidekiqTestingInlineBlock:
+  Description: 'Prevent Sidekiq Testing settings from leaking into other specs'
+  Enabled: true
+  VersionAdded: '0.1.6'
+
 Style/DisableProgrammaticEnumValue:
   Description: 'Disallow users to create enums with an each_value statement'
   Enabled: true
