@@ -3,7 +3,7 @@
 module RuboCop
   module Cop
     module Security
-      # Block usage of Dir.chdir due to it's thread unsafe nature
+      # Block usage of Dir.chdir due to its thread unsafe nature
       #
       # @example BlockChdir: true (default)
       #
@@ -16,6 +16,9 @@ module RuboCop
       #   chdir ... do
       #     ...
       #   end
+      #
+      #   # good
+      #   Use exact path or create and call method in target dir instead
       #
       class DisableChdir < Base
         MSG = 'Avoid using Dir.chdir due to thread safety issues'
