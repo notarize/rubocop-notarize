@@ -22,3 +22,8 @@ Style/GraphCamelize:
   Description: 'Do not use the GraphQL camelize option as we always want the default value (true).'
   Enabled: true
   VersionAdded: '0.1.5'
+
+Security/DisableChdir:
+  Description: 'Disallow users to call chdir with a block'
+  Enabled: true
+  VersionAdded: '0.1.7'
