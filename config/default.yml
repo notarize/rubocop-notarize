@@ -27,3 +27,8 @@ Style/GraphCamelize:
   Description: 'Do not use the GraphQL camelize option as we always want the default value (true).'
   Enabled: true
   VersionAdded: '0.1.5'
+
+Performance/RequireFrozenStringLiteral:
+  Description: 'Require # frozen_string_literal: true in any file that creates a string literal'
+  Enabled: false
+  VersionAdded: '0.1.8'
