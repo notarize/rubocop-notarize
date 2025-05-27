@@ -1,7 +1,5 @@
 # frozen_string_literal: true
 
-require 'pry'
-
 module RuboCop
   module Cop
     module Performance
@@ -22,6 +20,7 @@ module RuboCop
         extend RuboCop::Cop::AutoCorrector
 
         MSG = 'Require "# frozen_string_literal: true" in any file that creates a string literal'
+        STRING_TOKEN_TYPES = [:tSTRING, :tSTRING_CONTENT].freeze
 
         def on_new_investigation
           return if processed_source.tokens.empty?
@@ -35,7 +34,7 @@ module RuboCop
         private
 
         def contains_string_literal?
-          processed_source.tokens.any? { |token| token.type == :tSTRING }
+          processed_source.tokens.any? { |token| STRING_TOKEN_TYPES.any?(token.type) }
         end
 
         def insert_comment(corrector)
@@ -53,7 +52,7 @@ module RuboCop
           token = nil
           next_token = processed_source.tokens[token_number]
 
-          while MagicComment.parse(next_token.text).any?
+          while next_token.text.start_with?(Style::Encoding::SHEBANG) || MagicComment.parse(next_token.text).any?
             token_number += 1
             token = next_token
             next_token = processed_source.tokens[token_number]
