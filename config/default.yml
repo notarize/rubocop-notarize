@@ -28,6 +28,11 @@ Style/GraphCamelize:
   Enabled: true
   VersionAdded: '0.1.5'
 
+Style/RequireConstantPrefix:
+  Description: 'Enforce the usage of `::` in front of any Ruby constant to ensure constants are resolved from the root namespace.'
+  Enabled: true
+  VersionAdded: '0.1.10'
+
 Performance/RequireFrozenStringLiteral:
   Description: 'Require # frozen_string_literal: true in any file that creates a string literal'
   Enabled: false
