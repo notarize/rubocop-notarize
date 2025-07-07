@@ -58,7 +58,7 @@ RSpec.describe RuboCop::Cop::Style::GraphCamelize, :config do
   end
 
   it 'registers offenses when using camelize in a complex field definition' do
-    expect_offense(<<~RUBY) \
+    expect_offense(<<~RUBY)
       field :queried_users, Graph::Connections::UserConnection, null: false, camelize: false, extras: [:lookahead] do
                                                                              ^^^^^^^^^^^^^^^ Do not use the camelize option.
         description "Find users by some attributes, admin users only"

@@ -17,6 +17,10 @@ module RuboCop
       #   # good
       #   String.new  # Ruby stdlib - allowed
       #   Array.new   # Ruby stdlib - allowed
+      #   T           # Sorbet - allowed
+      #   class MyClass; end
+      #   module MyModule; end
+      #   class Parent::Child; end
       #   ::MyClass::CONSTANT
       #   ::SomeModule.method
       #   ::CustomClass.new
@@ -35,15 +39,16 @@ module RuboCop
           Comparable Enumerable Math FileTest Marshal ObjectSpace Process
           GC Signal Fiber Random SecureRandom Set OpenStruct Pathname
           URI JSON CSV YAML Zlib Digest Base64 Logger Benchmark
-          Date DateTime BigDecimal StringIO Tempfile
+          Date DateTime BigDecimal StringIO Tempfile STDOUT STDERR STDIN T
         ].freeze
 
         def on_const(node)
           return if prefixed_with_double_colon?(node)
-          return if nested_constant?(node)
           return if ruby_stdlib_constant?(node)
+          return if constant_in_class_or_module_definition?(node)
+          return if nested_constant?(node)
 
-          add_offense(node) do |corrector|
+          add_offense(node.loc.name) do |corrector|
             full_constant_name = resolve_constant_namespace(node)
             if full_constant_name && full_constant_name != node.const_name
               corrector.replace(node, full_constant_name)
@@ -61,15 +66,36 @@ module RuboCop
 
         def nested_constant?(node)
           # Don't flag constants that are already nested within another constant
-          # e.g., in MyClass::CONSTANT, we only want to flag MyClass, not CONSTANT
-          parent = node.parent
-          return false unless parent
-
-          parent.const_type? && parent.children.last == node
+          # e.g., in MyClass::CONSTANT, we only want to flag MyClass, not CONSTANT\
+          node.respond_to?(:children) && node.children.first&.const_type?
         end
 
         def ruby_stdlib_constant?(node)
           RUBY_STDLIB_CONSTANTS.include?(node.const_name)
+        end
+
+        def constant_in_class_or_module_definition?(node)
+          # Check if this constant is part of the name being defined in a class or module declaration
+          # e.g., in `class MyClass` or `module MyModule` or `class Parent::Child`,
+          # we don't want to flag MyClass, MyModule, Parent, or Child
+          parent = node.parent
+          return false unless parent
+
+          # Check if the parent is a class or module and this node is part of the name definition
+          return true if %i[class module].include?(parent.type) && parent.children.first == node
+
+          # Check if this is part of a nested constant in a class/module definition
+          # e.g., in `class Parent::Child`, both Parent and Child should be excluded
+          current = node
+          while current
+            if current.const_type? && current.parent
+              parent_node = current.parent
+              return true if %i[class module].include?(parent_node.type) && parent_node.children.first == current
+            end
+            current = current.parent
+          end
+
+          false
         end
 
         def resolve_constant_namespace(node)
@@ -79,11 +105,9 @@ module RuboCop
           # Try to find the constant definition in the current file
           constant_definition = find_constant_definition(constant_name, current_namespace)
 
-          if constant_definition
-            build_full_namespace_path(constant_definition)
-          else
-            nil
-          end
+          return unless constant_definition
+
+          build_full_namespace_path(constant_definition)
         end
 
         def find_current_namespace(node)
@@ -107,19 +131,12 @@ module RuboCop
         def build_namespace_name(const_node)
           case const_node.type
           when :const
-            if const_node.children.first.nil?
-              # Top-level constant like ::MyClass
-              const_node.const_name
-            elsif const_node.children.first.const_type?
+            if const_node.children.first&.const_type?
               # Nested constant like MyModule::MyClass
               "#{build_namespace_name(const_node.children.first)}::#{const_node.const_name}"
             else
               const_node.const_name
             end
-          when :cbase
-            nil
-          else
-            nil
           end
         end
 
@@ -148,11 +165,9 @@ module RuboCop
               new_search_namespace = search_namespace + [namespace_name].compact
 
               # Check if this is the constant we're looking for
-              if namespace_name == constant_name
+              if (namespace_name == constant_name) && namespaces_match?(current_namespace, search_namespace)
                 # Check if we're in the right context
-                if namespaces_match?(current_namespace, search_namespace)
-                  return new_search_namespace
-                end
+                return new_search_namespace
               end
 
               # Search within this namespace
@@ -163,9 +178,7 @@ module RuboCop
             # Constant assignment like CONSTANT = value
             if node.children[1] == constant_name.to_sym
               full_namespace = search_namespace + [constant_name]
-              if namespaces_match?(current_namespace, search_namespace)
-                return full_namespace
-              end
+              return full_namespace if namespaces_match?(current_namespace, search_namespace)
             end
           end
 
@@ -195,6 +208,7 @@ module RuboCop
 
         def build_full_namespace_path(namespace_parts)
           return nil if namespace_parts.empty?
+
           "::#{namespace_parts.join('::')}"
         end
       end

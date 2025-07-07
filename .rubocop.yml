@@ -1,9 +1,23 @@
-require:
+plugins:
   - rubocop-rake
   - rubocop-rspec
 
 AllCops:
   NewCops: enable
+
+Metrics/ClassLength:
+  Max: 500
+
+Metrics/CyclomaticComplexity:
+  Enabled: false
+  Max: 12
+
+Metrics/MethodLength:
+  Enabled: false
+
+Metrics/PerceivedComplexity:
+  Enabled: false
+  Max: 12
 
 Naming/FileName:
   Exclude:
