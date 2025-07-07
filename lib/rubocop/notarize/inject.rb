@@ -1,11 +1,8 @@
 # frozen_string_literal: true
 
-# The original code is from https://github.com/rubocop-hq/rubocop-rspec/blob/master/lib/rubocop/rspec/inject.rb
-# See https://github.com/rubocop-hq/rubocop-rspec/blob/master/MIT-LICENSE.md
+# TODO: PLAT-6178 move to plugins https://docs.rubocop.org/rubocop/plugin_migration_guide.html
 module RuboCop
   module Notarize
-    # Because RuboCop doesn't yet support plugins, we have to monkey patch in a
-    # bit of our configuration.
     module Inject
       def self.defaults!
         path = CONFIG_DEFAULT.to_s

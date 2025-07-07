@@ -578,4 +578,17 @@ RSpec.describe RuboCop::Cop::Style::RequireConstantPrefix, :config do
       end
     RUBY
   end
+
+  # https://sorbet.org/docs/error-reference#5061
+  it "does not register offenses for private constants" do
+    expect_no_offenses(<<~RUBY)
+      module MyModule
+        PRIVATE_CONSTANT = "This is private"
+        private_constant :PRIVATE_CONSTANT
+        def self.use_private_constant
+          puts PRIVATE_CONSTANT
+        end
+      end
+    RUBY
+  end
 end

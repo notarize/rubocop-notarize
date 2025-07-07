@@ -42,11 +42,16 @@ module RuboCop
           Date DateTime BigDecimal StringIO Tempfile STDOUT STDERR STDIN T
         ].freeze
 
+        def self.safe?
+          false
+        end
+
         def on_const(node)
           return if prefixed_with_double_colon?(node)
           return if ruby_stdlib_constant?(node)
           return if constant_in_class_or_module_definition?(node)
           return if nested_constant?(node)
+          return if private_constant?(node)
 
           add_offense(node.loc.name) do |corrector|
             full_constant_name = resolve_constant_namespace(node)
@@ -68,6 +73,29 @@ module RuboCop
           # Don't flag constants that are already nested within another constant
           # e.g., in MyClass::CONSTANT, we only want to flag MyClass, not CONSTANT\
           node.respond_to?(:children) && node.children.first&.const_type?
+        end
+
+        def private_constant?(node)
+          # Get the constant name
+          constant_name = node.const_name
+
+          # Find the current namespace (module or class)
+          current_namespace = node.each_ancestor(:module, :class).first
+          return false unless current_namespace
+
+          # Look for private_constant calls in the current namespace
+          current_namespace.each_descendant(:send) do |send_node|
+            next unless send_node.method_name == :private_constant
+
+            # Check if this private_constant call references our constant
+            send_node.arguments.each do |arg|
+              if arg.sym_type? && arg.value.to_s == constant_name
+                return true
+              end
+            end
+          end
+
+          false
         end
 
         def ruby_stdlib_constant?(node)
@@ -102,8 +130,9 @@ module RuboCop
           constant_name = node.const_name
           current_namespace = find_current_namespace(node)
 
-          # Try to find the constant definition in the current file
+          # Try to find the constant definition in the current file or directory
           constant_definition = find_constant_definition(constant_name, current_namespace)
+          constant_definition ||= find_constant_definition_in_directory(constant_name, current_namespace)
 
           return unless constant_definition
 
@@ -147,6 +176,61 @@ module RuboCop
 
           # Search for constant definitions
           find_constant_in_node(root_node, constant_name, current_namespace)
+        end
+
+        def find_constant_definition_in_directory(constant_name, current_namespace)
+          return nil unless constant_name
+
+          # Get the directory of the current file being analyzed
+          current_file_path = processed_source&.file_path
+          return nil unless current_file_path && File.exist?(current_file_path)
+
+          current_directory = File.dirname(current_file_path)
+
+          # Convert constant name to snake_case for potential file name
+          snake_case_name = constant_name.to_s.snakecase
+
+          # List of files to search, prioritizing the snake_case named file
+          files_to_search = []
+
+          # Add the prioritized file first (snake_case + .rb)
+          priority_file = File.join(current_directory, "#{snake_case_name}.rb")
+          files_to_search << priority_file if File.exist?(priority_file)
+
+          # Add all other .rb files in the directory
+          Dir.glob(File.join(current_directory, "*.rb")).each do |file|
+            next if file == current_file_path # Skip the current file
+            next if file == priority_file # Skip the priority file (already added)
+
+            files_to_search << file
+          end
+
+          # Search through each file for the constant definition
+          files_to_search.each do |file_path|
+            next unless File.readable?(file_path)
+
+            begin
+              file_content = File.read(file_path)
+
+              # Parse the file to get its AST
+              parsed_source = RuboCop::ProcessedSource.new(file_content, ruby_version)
+              next unless parsed_source.valid_syntax?
+
+              # Search for the constant in this file's AST
+              constant_definition = find_constant_in_node(
+                parsed_source.ast,
+                constant_name,
+                current_namespace
+              )
+
+              return constant_definition if constant_definition
+            rescue StandardError => e
+              # Skip files that can't be read or parsed
+              next
+            end
+          end
+
+          nil
         end
 
         def find_root_node
