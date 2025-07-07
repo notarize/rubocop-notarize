@@ -170,7 +170,7 @@ RSpec.describe RuboCop::Cop::Performance::RequireFrozenStringLiteral, :config do
       ^ Require "# frozen_string_literal: true" in any file that creates a string literal
       # typed: strict
       # encoding: utf-8
-      # hey how's it going?#{' '}
+      # hey how's it going?
 
       VAL = "hello"
     RUBY
@@ -180,7 +180,7 @@ RSpec.describe RuboCop::Cop::Performance::RequireFrozenStringLiteral, :config do
       # typed: strict
       # encoding: utf-8
       # frozen_string_literal: true
-      # hey how's it going?#{' '}
+      # hey how's it going?
 
       VAL = "hello"
     RUBY
