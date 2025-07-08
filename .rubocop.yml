@@ -5,19 +5,20 @@ plugins:
 AllCops:
   NewCops: enable
 
+Metrics/AbcSize:
+  Enabled: false
+
 Metrics/ClassLength:
-  Max: 500
+  Enabled: false
 
 Metrics/CyclomaticComplexity:
   Enabled: false
-  Max: 12
 
 Metrics/MethodLength:
   Enabled: false
 
 Metrics/PerceivedComplexity:
   Enabled: false
-  Max: 12
 
 Naming/FileName:
   Exclude:

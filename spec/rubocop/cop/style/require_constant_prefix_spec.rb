@@ -580,7 +580,7 @@ RSpec.describe RuboCop::Cop::Style::RequireConstantPrefix, :config do
   end
 
   # https://sorbet.org/docs/error-reference#5061
-  it "does not register offenses for private constants" do
+  it 'does not register offenses for private constants' do
     expect_no_offenses(<<~RUBY)
       module MyModule
         PRIVATE_CONSTANT = "This is private"
@@ -590,5 +590,30 @@ RSpec.describe RuboCop::Cop::Style::RequireConstantPrefix, :config do
         end
       end
     RUBY
+  end
+
+  it 'corrects a constant located in the same directory' do
+    source = <<~RUBY
+      module RequireConstantPrefixSpec
+        class MyClass < RequireConstantPrefixSuperclass; end
+      end
+    RUBY
+    corrected_source = <<~RUBY
+      module RequireConstantPrefixSpec
+        class MyClass < ::RequireConstantPrefixSpec::RequireConstantPrefixSuperclass; end
+      end
+    RUBY
+
+    processed_source = RuboCop::ProcessedSource.new(
+      source,
+      RUBY_VERSION.to_f,
+      'spec/files/my_class.rb'
+    )
+
+    cop = described_class.new
+    commissioner = RuboCop::Cop::Commissioner.new([cop])
+    report = commissioner.investigate(processed_source)
+
+    expect(report.offenses.first.corrector.rewrite).to(eq(corrected_source))
   end
 end

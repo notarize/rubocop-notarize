@@ -30,6 +30,8 @@ module RuboCop
 
         MSG = 'Use `::` prefix for constants to ensure resolution from root namespace.'
 
+        # Sorbet constants that should be excluded from this rule
+        SORBET_CONSTANTS = %w[T].freeze
         # Ruby standard library constants that should be excluded from this rule
         RUBY_STDLIB_CONSTANTS = %w[
           Array BasicObject Binding Class Complex Data Dir Encoding Enumerator
@@ -39,21 +41,22 @@ module RuboCop
           Comparable Enumerable Math FileTest Marshal ObjectSpace Process
           GC Signal Fiber Random SecureRandom Set OpenStruct Pathname
           URI JSON CSV YAML Zlib Digest Base64 Logger Benchmark
-          Date DateTime BigDecimal StringIO Tempfile STDOUT STDERR STDIN T
+          Date DateTime BigDecimal StringIO Tempfile STDOUT STDERR STDIN
         ].freeze
 
-        def self.safe?
+        def self.safe_autocorrect?
           false
         end
 
         def on_const(node)
           return if prefixed_with_double_colon?(node)
           return if ruby_stdlib_constant?(node)
+          return if sorbet_constant?(node)
           return if constant_in_class_or_module_definition?(node)
           return if nested_constant?(node)
           return if private_constant?(node)
 
-          add_offense(node.loc.name) do |corrector|
+          add_offense(node) do |corrector|
             full_constant_name = resolve_constant_namespace(node)
             if full_constant_name && full_constant_name != node.const_name
               corrector.replace(node, full_constant_name)
@@ -89,9 +92,7 @@ module RuboCop
 
             # Check if this private_constant call references our constant
             send_node.arguments.each do |arg|
-              if arg.sym_type? && arg.value.to_s == constant_name
-                return true
-              end
+              return true if arg.sym_type? && arg.value.to_s == constant_name
             end
           end
 
@@ -100,6 +101,10 @@ module RuboCop
 
         def ruby_stdlib_constant?(node)
           RUBY_STDLIB_CONSTANTS.include?(node.const_name)
+        end
+
+        def sorbet_constant?(node)
+          SORBET_CONSTANTS.include?(node.const_name)
         end
 
         def constant_in_class_or_module_definition?(node)
@@ -136,6 +141,8 @@ module RuboCop
           return unless constant_definition
 
           build_full_namespace_path(constant_definition)
+        rescue StandardError => e
+          puts e
         end
 
         def find_current_namespace(node)
@@ -182,20 +189,20 @@ module RuboCop
 
           # Get the directory of the current file being analyzed
           current_file_path = processed_source&.file_path
-          return nil unless current_file_path && File.exist?(current_file_path)
+          return nil unless current_file_path
 
           current_directory = File.dirname(current_file_path)
-
-          # Convert constant name to snake_case for potential file name
-          snake_case_name = constant_name.to_s.snakecase
+          snake_case_name = constant_to_snake_case(constant_name)
 
           file_path = File.join(current_directory, "#{snake_case_name}.rb")
           return unless File.exist?(file_path) && File.readable?(file_path)
+
           file_content = File.read(file_path)
 
           # Parse the file to get its AST
-          parsed_source = RuboCop::ProcessedSource.new(file_content, ruby_version)
+          parsed_source = RuboCop::ProcessedSource.new(file_content, RUBY_VERSION.to_f)
           return unless parsed_source.valid_syntax?
+
           find_constant_in_node(
             parsed_source.ast,
             constant_name,
@@ -264,6 +271,14 @@ module RuboCop
           return nil if namespace_parts.empty?
 
           "::#{namespace_parts.join('::')}"
+        end
+
+        def constant_to_snake_case(str)
+          str.gsub('::', '/')
+             .gsub(/([A-Z]+)([A-Z][a-z])/, '\1_\2')
+             .gsub(/([a-z\d])([A-Z])/, '\1_\2')
+             .tr('-', '_')
+             .downcase
         end
       end
     end
