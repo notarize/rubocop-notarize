@@ -31,6 +31,7 @@ Style/GraphCamelize:
 Style/RequireConstantPrefix:
   Description: 'Enforce the usage of `::` in front of any Ruby constant to ensure constants are resolved from the root namespace.'
   Enabled: false
+  SafeAutoCorrect: false
   VersionAdded: '0.1.10'
 
 Performance/RequireFrozenStringLiteral:
