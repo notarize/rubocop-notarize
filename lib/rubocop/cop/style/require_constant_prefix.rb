@@ -129,7 +129,6 @@ module RuboCop
         def resolve_constant_namespace(node)
           constant_name = node.const_name
           current_namespace = find_current_namespace(node)
-
           # Try to find the constant definition in the current file or directory
           constant_definition = find_constant_definition(constant_name, current_namespace)
           constant_definition ||= find_constant_definition_in_directory(constant_name, current_namespace)
@@ -190,47 +189,18 @@ module RuboCop
           # Convert constant name to snake_case for potential file name
           snake_case_name = constant_name.to_s.snakecase
 
-          # List of files to search, prioritizing the snake_case named file
-          files_to_search = []
+          file_path = File.join(current_directory, "#{snake_case_name}.rb")
+          return unless File.exist?(file_path) && File.readable?(file_path)
+          file_content = File.read(file_path)
 
-          # Add the prioritized file first (snake_case + .rb)
-          priority_file = File.join(current_directory, "#{snake_case_name}.rb")
-          files_to_search << priority_file if File.exist?(priority_file)
-
-          # Add all other .rb files in the directory
-          Dir.glob(File.join(current_directory, "*.rb")).each do |file|
-            next if file == current_file_path # Skip the current file
-            next if file == priority_file # Skip the priority file (already added)
-
-            files_to_search << file
-          end
-
-          # Search through each file for the constant definition
-          files_to_search.each do |file_path|
-            next unless File.readable?(file_path)
-
-            begin
-              file_content = File.read(file_path)
-
-              # Parse the file to get its AST
-              parsed_source = RuboCop::ProcessedSource.new(file_content, ruby_version)
-              next unless parsed_source.valid_syntax?
-
-              # Search for the constant in this file's AST
-              constant_definition = find_constant_in_node(
-                parsed_source.ast,
-                constant_name,
-                current_namespace
-              )
-
-              return constant_definition if constant_definition
-            rescue StandardError => e
-              # Skip files that can't be read or parsed
-              next
-            end
-          end
-
-          nil
+          # Parse the file to get its AST
+          parsed_source = RuboCop::ProcessedSource.new(file_content, ruby_version)
+          return unless parsed_source.valid_syntax?
+          find_constant_in_node(
+            parsed_source.ast,
+            constant_name,
+            current_namespace
+          )
         end
 
         def find_root_node
