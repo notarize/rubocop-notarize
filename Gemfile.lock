@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    rubocop-notarize (0.1.9)
+    rubocop-notarize (0.1.8)
       rubocop (>= 0.92)
 
 GEM
@@ -72,7 +72,7 @@ DEPENDENCIES
   rubocop-rspec
 
 RUBY VERSION
-   ruby 3.3.9p170
+   ruby 3.2.2p53
 
 BUNDLED WITH
    2.4.20
