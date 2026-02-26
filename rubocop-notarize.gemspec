@@ -5,7 +5,7 @@ require_relative 'lib/rubocop/notarize/version'
 Gem::Specification.new do |spec|
   spec.name          = 'rubocop-notarize'
   spec.version       = RuboCop::Notarize::VERSION
-  spec.authors       = ['Arturo Gonzalez', 'Matthew Murphy', 'Jérémie Charrier']
+  spec.authors       = ['Matthew Murphy', 'Jérémie Charrier']
 
   spec.summary       = 'Create Linting rules for Notarize platform'
   spec.description   = 'Custom linting rules for Notarize Ruby platform'
@@ -20,6 +20,6 @@ Gem::Specification.new do |spec|
   spec.executables   = spec.files.grep(%r{^exe/}) { |f| File.basename(f) }
   spec.require_paths = ['lib']
 
-  spec.add_runtime_dependency 'rubocop', '>= 0.92'
+  spec.add_dependency 'rubocop', '>= 0.92'
   spec.metadata['rubygems_mfa_required'] = 'true'
 end

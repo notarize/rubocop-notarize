@@ -20,7 +20,7 @@ module RuboCop
         extend RuboCop::Cop::AutoCorrector
 
         MSG = 'Require "# frozen_string_literal: true" in any file that creates a string literal'
-        STRING_TOKEN_TYPES = [:tSTRING, :tSTRING_CONTENT].freeze
+        STRING_TOKEN_TYPES = %i[tSTRING tSTRING_CONTENT].freeze
 
         def on_new_investigation
           return if processed_source.tokens.empty?
@@ -41,7 +41,8 @@ module RuboCop
           comment = last_special_comment(processed_source)
 
           if comment
-            corrector.insert_after(processed_source.buffer.line_range(comment.line), "\n#{FROZEN_STRING_LITERAL_ENABLED}")
+            corrector.insert_after(processed_source.buffer.line_range(comment.line),
+                                   "\n#{FROZEN_STRING_LITERAL_ENABLED}")
           else
             corrector.insert_before(processed_source.buffer.source_range, "#{FROZEN_STRING_LITERAL_ENABLED}\n")
           end

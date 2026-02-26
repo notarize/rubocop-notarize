@@ -1,6 +1,5 @@
 # frozen_string_literal: true
 
-
 RSpec.describe RuboCop::Cop::Sidekiq::RequireSidekiqTestingInlineBlock, :config do
   it 'registers an offense when using Sidekiq::Testing.inline! without a block' do
     expect_offense(<<~RUBY)

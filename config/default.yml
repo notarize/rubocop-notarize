@@ -13,6 +13,11 @@ Security/DisableChdir:
   Enabled: true
   VersionAdded: '0.1.7'
 
+Security/DisableInspect:
+  Description: 'Disallow calling .inspect as it can leak sensitive data into logs'
+  Enabled: true
+  VersionAdded: '0.1.10'
+
 Sidekiq/RequireSidekiqTestingInlineBlock:
   Description: 'Prevent Sidekiq Testing settings from leaking into other specs'
   Enabled: true
