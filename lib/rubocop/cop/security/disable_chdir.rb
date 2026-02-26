@@ -29,6 +29,7 @@ module RuboCop
 
         def on_block(node)
           return unless chdir?(node.send_node)
+
           add_offense(node)
         end
       end
