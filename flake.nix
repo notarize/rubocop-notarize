@@ -5,30 +5,22 @@
     nixpkgs-ruby = {
       url = "github:bobvanderlinden/nixpkgs-ruby";
     };
-
-    proof = {
-      url = "git+ssh://git@github.com/notarize/flake";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
   };
 
-  outputs = { self, nixpkgs, nixpkgs-ruby, proof } @ inputs: {
-    inherit (proof) formatter;
-
-    devShells = proof.lib.devenv.mapDefaultDevShells (system:
-      let
-        ruby = nixpkgs-ruby.lib.packageFromRubyVersionFile {
-          inherit system;
-          file = ./.ruby-version;
-        };
-      in
-      {
-        name = "rubocop-notarize";
-        modules = import ./devenv.nix { inherit ruby; };
-        inherit self;
-        pkgs = import nixpkgs {
-          inherit system;
-        };
-      });
+  outputs = { self, nixpkgs, nixpkgs-ruby }: let
+    systems = [ "x86_64-darwin" "aarch64-darwin" ];
+    forAllSystems = f: nixpkgs.lib.genAttrs systems f;
+  in {
+    devShells = forAllSystems (system: let
+      pkgs = import nixpkgs { inherit system; };
+      ruby = nixpkgs-ruby.lib.packageFromRubyVersionFile {
+        inherit system;
+        file = ./.ruby-version;
+      };
+    in {
+      default = pkgs.mkShell {
+        buildInputs = [ ruby pkgs.just ];
+      };
+    });
   };
 }
